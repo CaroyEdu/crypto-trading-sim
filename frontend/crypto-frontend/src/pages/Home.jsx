@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Container, CircularProgress, Stack, Button } from "@mui/material";
+import { useState, useEffect, useRef } from "react";
+import { Container, CircularProgress, Stack, Box, Paper } from "@mui/material";
 import AccountInfo from "../components/AccountInfo";
 import BuySellForm from "../components/BuySellForm";
 import Portfolio from "../components/Portfolio";
@@ -11,6 +11,8 @@ const publicId = "6bb5d398-da1e-4d2d-97ae-dacea4e1c556";
 export default function Home() {
   const [account, setAccount] = useState(null);
   const [tickers, setTickers] = useState({});
+  const leftColumnRef = useRef(null);
+  const [leftHeight, setLeftHeight] = useState(0);
 
   const fetchAccount = async () => {
     const res = await getAccount(publicId);
@@ -20,6 +22,12 @@ export default function Home() {
   useEffect(() => {
     fetchAccount();
   }, []);
+
+  useEffect(() => {
+    if (leftColumnRef.current) {
+      setLeftHeight(leftColumnRef.current.clientHeight);
+    }
+  }, [account]);
 
   const handleReset = async () => {
     await resetAccount(publicId);
@@ -38,37 +46,70 @@ export default function Home() {
     );
 
   return (
-    <Stack
-      direction="row"
-      spacing={2}
-      sx={{
-        justifyContent: "space-evenly",
-        alignItems: "center",
-      }}
-    >
+    <Container maxWidth="lg" sx={{ mt: 5 }}>
       <Stack
-        direction="column"
+        direction="row"
         spacing={2}
-        sx={{
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        sx={{ alignItems: "flex-start", justifyContent: "center" }}
       >
-        <Container maxWidth="md" sx={{ mt: 5 }}>
-          <AccountInfo account={account} />
-          <Button variant="outlined" onClick={handleReset} sx={{ mb: 4 }}>
-            Reset Account
-          </Button>
+        {/* Columna izquierda */}
+        <Stack
+          ref={leftColumnRef}
+          direction="column"
+          spacing={2}
+          sx={{
+            flex: 1.2,
+            maxWidth: 520,
+            justifyContent: "center",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: 2,
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <AccountInfo account={account} onReset={handleReset} />
+          </Paper>
 
-          <BuySellForm
-            accountPublicId={publicId}
-            onTransaction={loadTransactions}
-            livePrices={tickers}
-          />
-          <Portfolio account={account} />
-        </Container>
+          <Paper elevation={3} sx={{ p: 2, flex: 1 }}>
+            <BuySellForm
+              accountPublicId={publicId}
+              onTransaction={loadTransactions}
+              livePrices={tickers}
+            />
+          </Paper>
+
+          <Paper
+            elevation={3}
+            sx={{
+              p: 2,
+              flex: 1,
+              maxHeight: 150,
+              overflowY: "auto",
+            }}
+          >
+            <Portfolio account={account} />
+          </Paper>
+        </Stack>
+        <Box
+          sx={{
+            flex: 1,
+            height: leftHeight,
+            overflowY: "auto",
+            overflowX: "visible",
+            boxShadow: 3,
+            borderRadius: 1,
+            minWidth: 800,
+          }}
+        >
+          <TickerTable onTickersUpdate={setTickers} />
+        </Box>
       </Stack>
-      <TickerTable onTickersUpdate={setTickers} />
-    </Stack>
+    </Container>
   );
 }

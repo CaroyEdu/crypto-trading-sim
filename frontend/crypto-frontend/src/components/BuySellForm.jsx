@@ -7,10 +7,33 @@ import {
   Typography,
   Snackbar,
   Alert,
+  Stack,
+  Paper,
 } from "@mui/material";
 import { createTransaction } from "../services/api";
 
-const PAIRS = ["XBT/USD", "ETH/USD", "ADA/USD", "DOT/USD", "SOL/USD"];
+const PAIRS = [
+  "BTC/USD",
+  "ETH/USD",
+  "XRP/USD",
+  "LTC/USD",
+  "BCH/USD",
+  "ADA/USD",
+  "DOT/USD",
+  "SOL/USD",
+  "LINK/USD",
+  "MATIC/USD",
+  "DOGE/USD",
+  "UNI/USD",
+  "AVAX/USD",
+  "ATOM/USD",
+  "ALGO/USD",
+  "XLM/USD",
+  "TRX/USD",
+  "FIL/USD",
+  "AAVE/USD",
+  "COMP/USD",
+];
 
 export default function BuySellForm({
   accountPublicId,
@@ -18,11 +41,10 @@ export default function BuySellForm({
   livePrices,
 }) {
   const [type, setType] = useState("BUY");
-  const [cryptoSymbol, setCryptoSymbol] = useState("XBT/USD");
+  const [cryptoSymbol, setCryptoSymbol] = useState("BTC/USD");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState(0);
 
-  // Notificaciones
   const [notification, setNotification] = useState({
     open: false,
     message: "",
@@ -55,7 +77,6 @@ export default function BuySellForm({
       });
       onTransaction();
     } catch (error) {
-      // Intenta obtener el mensaje del backend
       const backendMessage =
         error?.response?.data?.message || "An error occurred";
       setNotification({
@@ -69,62 +90,68 @@ export default function BuySellForm({
   const total = amount && price ? parseFloat(amount) * price : 0;
 
   return (
-    <Box mb={4}>
+    <Paper sx={{ p: 3 }} elevation={3}>
       <Typography variant="h6" gutterBottom>
         Simulate Buy/Sell
       </Typography>
 
-      <TextField
-        select
-        value={type}
-        onChange={(e) => setType(e.target.value)}
-        sx={{ mr: 2 }}
+      <Stack direction="row" spacing={2} mb={2} alignItems="center">
+        <TextField
+          select
+          label="Type"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          sx={{ minWidth: 100, flex: 1 }}
+        >
+          <MenuItem value="BUY">Buy</MenuItem>
+          <MenuItem value="SELL">Sell</MenuItem>
+        </TextField>
+
+        <TextField
+          select
+          label="Crypto"
+          value={cryptoSymbol}
+          onChange={(e) => setCryptoSymbol(e.target.value)}
+          sx={{ minWidth: 120, flex: 2 }}
+        >
+          {PAIRS.map((p) => (
+            <MenuItem key={p} value={p}>
+              {p}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Stack>
+
+      <Stack direction="row" spacing={2} mb={2} alignItems="center">
+        <TextField
+          label="Amount"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          sx={{ flex: 1 }}
+        />
+      </Stack>
+
+      <Box
+        mb={2}
+        sx={{
+          fontWeight: "bold",
+          fontSize: 18,
+          color: price ? "primary.main" : "text.secondary",
+        }}
       >
-        <MenuItem value="BUY">Buy</MenuItem>
-        <MenuItem value="SELL">Sell</MenuItem>
-      </TextField>
-
-      <TextField
-        select
-        value={cryptoSymbol}
-        onChange={(e) => setCryptoSymbol(e.target.value)}
-        sx={{ mr: 2 }}
-      >
-        {PAIRS.map((p) => (
-          <MenuItem key={p} value={p}>
-            {p}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <TextField
-        label="Cantidad"
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        sx={{ mr: 2 }}
-      />
-
-      <TextField
-        label="Precio unitario"
-        value={price ? `$${price.toFixed(2)}` : "-"}
-        InputProps={{ readOnly: true }}
-        sx={{ mr: 2 }}
-      />
+        Total: {amount && price ? `$${total.toFixed(2)}` : "-"}
+      </Box>
 
       <Button
         variant="contained"
         onClick={handleSubmit}
         disabled={!amount || !price}
+        fullWidth
+        size="large"
       >
         Confirm
       </Button>
-
-      <Box mt={2}>
-        <Typography variant="body1">
-          Total: {amount && price ? `$${total.toFixed(2)}` : "-"}
-        </Typography>
-      </Box>
 
       <Snackbar
         open={notification.open}
@@ -140,6 +167,6 @@ export default function BuySellForm({
           {notification.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </Paper>
   );
 }

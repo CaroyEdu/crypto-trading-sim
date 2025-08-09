@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -16,8 +16,27 @@ const TickerTable = ({ onTickersUpdate }) => {
   const [loading, setLoading] = useState(true);
   const ws = useRef(null);
 
-  // Pares válidos (asegúrate de que existen en Kraken)
-  const symbols = ["BTC/USD", "ETH/USD", "ADA/USD", "SOL/USD", "DOT/USD"];
+  const symbols = [
+    "BTC/USD",
+    "ETH/USD",
+    "XRP/USD",
+    "LTC/USD",
+    "BCH/USD",
+    "ADA/USD",
+    "DOT/USD",
+    "SOL/USD",
+    "LINK/USD",
+    "DOGE/USD",
+    "UNI/USD",
+    "AVAX/USD",
+    "ATOM/USD",
+    "ALGO/USD",
+    "XLM/USD",
+    "TRX/USD",
+    "FIL/USD",
+    "AAVE/USD",
+    "COMP/USD",
+  ];
 
   const fetchInitialData = async () => {
     try {
@@ -41,7 +60,7 @@ const TickerTable = ({ onTickersUpdate }) => {
           bid: parseFloat(raw.b[0]),
           high: parseFloat(raw.h[1]),
           low: parseFloat(raw.l[1]),
-          change_pct: 0, // inicializado en 0
+          change_pct: 0,
         };
       });
 
@@ -127,7 +146,6 @@ const TickerTable = ({ onTickersUpdate }) => {
     };
   }, []);
 
-  // Aquí llamamos a onTickersUpdate solo después de actualizar tickers
   useEffect(() => {
     if (Object.keys(tickers).length > 0) {
       onTickersUpdate?.(tickers);
@@ -137,12 +155,12 @@ const TickerTable = ({ onTickersUpdate }) => {
   return (
     <Paper style={{ padding: 20 }}>
       <Typography variant="h4" gutterBottom>
-        Top 20 Crypto Prices (Live)
+        Top Crypto Prices (Live)
       </Typography>
       {loading ? (
         <CircularProgress />
       ) : (
-        <Table>
+        <Table sx={{ height: "100%" }}>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -164,7 +182,7 @@ const TickerTable = ({ onTickersUpdate }) => {
                 <strong>Low</strong>
               </TableCell>
               <TableCell align="right">
-                <strong>Change %</strong>
+                <strong>Change%</strong>
               </TableCell>
             </TableRow>
           </TableHead>
