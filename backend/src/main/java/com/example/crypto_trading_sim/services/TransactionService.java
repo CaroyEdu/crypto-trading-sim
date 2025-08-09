@@ -1,38 +1,81 @@
 package com.example.crypto_trading_sim.services;
 
+import com.example.crypto_trading_sim.models.Portfolio;
 import com.example.crypto_trading_sim.models.Transaction;
+import com.example.crypto_trading_sim.repositories.AccountRepository;
 import com.example.crypto_trading_sim.repositories.TransactionRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-
-    public TransactionService(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
-    }
+    private final AccountRepository accountRepository;
+    private final PortfolioService portfolioService;
 
     public List<Transaction> getTransactionsByAccountPublicId(String accountPublicId) {
         return transactionRepository.findByAccountPublicId(accountPublicId);
     }
 
-    public void createTransaction(String accountPublicId, String type, String cryptoSymbol,
-                                  BigDecimal amount, BigDecimal priceAtTransaction,
-                                  BigDecimal profitOrLoss) {
-
+    @Transactional
+    public void createTransaction(String accountPublicId, String type, String cryptoSymbol, BigDecimal amount, BigDecimal priceAtTransaction, BigDecimal profitOrLoss) {
         BigDecimal totalValue = priceAtTransaction.multiply(amount);
-        String publicId = UUID.randomUUID().toString();
-        Timestamp created = new Timestamp(System.currentTimeMillis());
+
+        if ("BUY".equalsIgnoreCase(type)) {
+            int updatedRows = accountRepository.subtractBalanceIfSufficient(accountPublicId, totalValue.doubleValue());
+            if (updatedRows == 0) {
+                throw new IllegalArgumentException("Insufficient funds for this transaction");
+            }
+
+            Optional<Portfolio> existingPortfolio = portfolioService
+                    .getPortfolioByAccountPublicId(accountPublicId)
+                    .stream()
+                    .filter(p -> p.getCryptoSymbol().equalsIgnoreCase(cryptoSymbol))
+                    .findFirst();
+
+            if (existingPortfolio.isPresent()) {
+                BigDecimal newAmount = existingPortfolio.get().getAmount().add(amount);
+                portfolioService.updateCryptoAmount(existingPortfolio.get().getPublicId(), newAmount);
+            } else {
+                portfolioService.addCryptoToPortfolio(accountPublicId, cryptoSymbol, amount);
+            }
+
+        } else if ("SELL".equalsIgnoreCase(type)) {
+            Optional<Portfolio> existingPortfolio = portfolioService
+                    .getPortfolioByAccountPublicId(accountPublicId)
+                    .stream()
+                    .filter(p -> p.getCryptoSymbol().equalsIgnoreCase(cryptoSymbol))
+                    .findFirst();
+
+            if (existingPortfolio.isEmpty() || existingPortfolio.get().getAmount().compareTo(amount) < 0) {
+                throw new IllegalArgumentException("Insufficient crypto holdings for this transaction");
+            }
+
+            BigDecimal newAmount = existingPortfolio.get().getAmount().subtract(amount);
+            if (newAmount.compareTo(BigDecimal.ZERO) > 0) {
+                portfolioService.updateCryptoAmount(existingPortfolio.get().getPublicId(), newAmount);
+            } else {
+                portfolioService.deleteCryptoFromPortfolio(existingPortfolio.get().getPublicId());
+            }
+
+            accountRepository.addBalance(accountPublicId, totalValue.doubleValue());
+
+        } else {
+            throw new IllegalArgumentException("Invalid transaction type: " + type);
+        }
 
         Transaction tx = new Transaction(
-                null, // id (auto)
-                publicId,
+                null,
+                UUID.randomUUID().toString(),
                 accountPublicId,
                 type,
                 cryptoSymbol,
@@ -40,7 +83,7 @@ public class TransactionService {
                 priceAtTransaction,
                 totalValue,
                 profitOrLoss,
-                created
+                new Timestamp(System.currentTimeMillis())
         );
 
         transactionRepository.save(tx);

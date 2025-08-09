@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/accounts")
 @AllArgsConstructor
@@ -32,7 +34,7 @@ public class AccountController {
     }
 
     @PutMapping("/{publicId}/balance")
-    public ResponseEntity<String> updateBalance(@PathVariable String publicId, @RequestParam double newBalance) {
+    public ResponseEntity<String> updateBalance(@PathVariable String publicId, @RequestParam BigDecimal newBalance) {
         boolean updated = accountService.updateBalance(publicId, newBalance);
         if (!updated) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

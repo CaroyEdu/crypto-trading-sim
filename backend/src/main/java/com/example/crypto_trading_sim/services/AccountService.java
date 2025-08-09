@@ -5,13 +5,13 @@ import com.example.crypto_trading_sim.repositories.AccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.math.BigDecimal;
 
 @Service
 @AllArgsConstructor
 public class AccountService {
 
-    private static final double INITIAL_BALANCE = 10000.00;
+    private static final BigDecimal INITIAL_BALANCE = BigDecimal.valueOf(10000.00);
     private final AccountRepository accountRepository;
 
     public Account findByPublicId(String publicId) {
@@ -28,7 +28,7 @@ public class AccountService {
         return true;
     }
 
-    public boolean updateBalance(String publicId, double newBalance) {
+    public boolean updateBalance(String publicId, BigDecimal newBalance) {
         Account account = accountRepository.findByPublicId(publicId);
         if (account == null) {
             return false;

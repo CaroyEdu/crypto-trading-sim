@@ -1,25 +1,22 @@
 package com.example.crypto_trading_sim.repositories;
 
 import com.example.crypto_trading_sim.models.Transaction;
+import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
 @Repository
+@AllArgsConstructor
 public class TransactionRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public TransactionRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     private static final class TransactionRowMapper implements RowMapper<Transaction> {
         @Override
@@ -61,4 +58,25 @@ public class TransactionRepository {
         );
         jdbcTemplate.update(sql, params);
     }
+
+    public BigDecimal getNetHoldings(String accountPublicId, String cryptoSymbol) {
+        String sql = """
+        SELECT COALESCE(SUM(
+            CASE WHEN type = 'BUY' THEN amount
+                 WHEN type = 'SELL' THEN -amount
+                 ELSE 0 END
+        ), 0) AS holdings
+        FROM transaction
+        WHERE account_public_id = :accountPublicId
+          AND crypto_symbol = :cryptoSymbol
+    """;
+
+        Map<String, Object> params = Map.of(
+                "accountPublicId", accountPublicId,
+                "cryptoSymbol", cryptoSymbol
+        );
+
+        return jdbcTemplate.queryForObject(sql, params, BigDecimal.class);
+    }
+
 }
