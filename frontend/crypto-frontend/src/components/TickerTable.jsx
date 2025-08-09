@@ -17,22 +17,23 @@ const TickerTable = ({ onTickersUpdate }) => {
   const ws = useRef(null);
 
   // Pares válidos (asegúrate de que existen en Kraken)
-  const symbols = [
-    "BTC/USD", "ETH/USD", "ADA/USD", "SOL/USD", "DOT/USD"
-  ];
+  const symbols = ["BTC/USD", "ETH/USD", "ADA/USD", "SOL/USD", "DOT/USD"];
 
   const fetchInitialData = async () => {
     try {
-      const response = await axios.get("https://api.kraken.com/0/public/Ticker", {
-        params: { pair: symbols.join(",").replaceAll("/", "") },
-      });
+      const response = await axios.get(
+        "https://api.kraken.com/0/public/Ticker",
+        {
+          params: { pair: symbols.join(",").replaceAll("/", "") },
+        }
+      );
 
       const result = {};
       const data = response.data.result;
 
       Object.keys(data).forEach((pair) => {
         const raw = data[pair];
-        const symbol = symbols.find(s => s.replace("/", "") === pair) || pair;
+        const symbol = symbols.find((s) => s.replace("/", "") === pair) || pair;
 
         result[symbol] = {
           last: parseFloat(raw.c[0]),
@@ -75,7 +76,11 @@ const TickerTable = ({ onTickersUpdate }) => {
         console.log("ℹ️ Status update:", msg);
       }
 
-      if (msg.channel === "ticker" && msg.type === "update" && Array.isArray(msg.data)) {
+      if (
+        msg.channel === "ticker" &&
+        msg.type === "update" &&
+        Array.isArray(msg.data)
+      ) {
         const updates = {};
 
         msg.data.forEach((entry) => {
@@ -93,9 +98,7 @@ const TickerTable = ({ onTickersUpdate }) => {
         });
 
         setTickers((prev) => {
-            const merged = { ...prev, ...updates };
-            onTickersUpdate?.(merged); // Notificamos al componente padre
-            return merged;
+          return { ...prev, ...updates };
         });
       }
 
@@ -124,6 +127,13 @@ const TickerTable = ({ onTickersUpdate }) => {
     };
   }, []);
 
+  // Aquí llamamos a onTickersUpdate solo después de actualizar tickers
+  useEffect(() => {
+    if (Object.keys(tickers).length > 0) {
+      onTickersUpdate?.(tickers);
+    }
+  }, [tickers, onTickersUpdate]);
+
   return (
     <Paper style={{ padding: 20 }}>
       <Typography variant="h4" gutterBottom>
@@ -135,13 +145,27 @@ const TickerTable = ({ onTickersUpdate }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell><strong>Symbol</strong></TableCell>
-              <TableCell align="right"><strong>Last</strong></TableCell>
-              <TableCell align="right"><strong>Ask</strong></TableCell>
-              <TableCell align="right"><strong>Bid</strong></TableCell>
-              <TableCell align="right"><strong>High</strong></TableCell>
-              <TableCell align="right"><strong>Low</strong></TableCell>
-              <TableCell align="right"><strong>Change %</strong></TableCell>
+              <TableCell>
+                <strong>Symbol</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Last</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Ask</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Bid</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>High</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Low</strong>
+              </TableCell>
+              <TableCell align="right">
+                <strong>Change %</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -150,12 +174,24 @@ const TickerTable = ({ onTickersUpdate }) => {
               return (
                 <TableRow key={symbol}>
                   <TableCell>{symbol}</TableCell>
-                  <TableCell align="right">${data?.last?.toFixed(2) ?? "-"}</TableCell>
-                  <TableCell align="right">${data?.ask?.toFixed(2) ?? "-"}</TableCell>
-                  <TableCell align="right">${data?.bid?.toFixed(2) ?? "-"}</TableCell>
-                  <TableCell align="right">${data?.high?.toFixed(2) ?? "-"}</TableCell>
-                  <TableCell align="right">${data?.low?.toFixed(2) ?? "-"}</TableCell>
-                  <TableCell align="right">{data?.change_pct?.toFixed(2) ?? "-"}%</TableCell>
+                  <TableCell align="right">
+                    ${data?.last?.toFixed(2) ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    ${data?.ask?.toFixed(2) ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    ${data?.bid?.toFixed(2) ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    ${data?.high?.toFixed(2) ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    ${data?.low?.toFixed(2) ?? "-"}
+                  </TableCell>
+                  <TableCell align="right">
+                    {data?.change_pct?.toFixed(2) ?? "-"}%
+                  </TableCell>
                 </TableRow>
               );
             })}

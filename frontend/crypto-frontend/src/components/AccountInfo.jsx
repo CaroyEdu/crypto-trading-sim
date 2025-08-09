@@ -1,10 +1,28 @@
-import { Typography, Box } from '@mui/material';
+import React from "react";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export default function AccountInfo({ account }) {
+function AccountInfo({ account }) {
+  const navigate = useNavigate();
+
+  const goToTransactionHistory = () => {
+    navigate("/transactions");
+  };
+
   return (
-    <Box mb={4}>
-      <Typography variant="h4">Hello, {account.name}</Typography>
-      <Typography variant="h6">You currently have {account.balance.toFixed(2)} Coins</Typography>
-    </Box>
+    <div>
+      <h2>Hello, {account.name}</h2>
+      <p>Balance: ${account.balance}</p>
+
+      <Button
+        variant="contained"
+        onClick={goToTransactionHistory}
+        sx={{ mt: 2 }}
+      >
+        View Transaction History
+      </Button>
+    </div>
   );
 }
+
+export default AccountInfo;

@@ -13,3 +13,6 @@ export const createTransaction = (payload) =>
 
 export const resetAccount = (publicId) =>
   axios.post(`${API_URL}/accounts/${publicId}/reset`);
+
+export const getPortfolio = (accountPublicId) =>
+  axios.get(`${API_URL}/portfolio/account/${accountPublicId}`);

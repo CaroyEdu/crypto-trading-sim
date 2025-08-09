@@ -1,22 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
   MenuItem,
   TextField,
-  Typography
-} from '@mui/material';
-import { createTransaction } from '../services/api';
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { createTransaction } from "../services/api";
 
-const PAIRS = ['XBT/USD', 'ETH/USD', 'ADA/USD', 'DOT/USD', 'SOL/USD'];
+const PAIRS = ["XBT/USD", "ETH/USD", "ADA/USD", "DOT/USD", "SOL/USD"];
 
-export default function BuySellForm({ accountPublicId, onTransaction, livePrices }) {
-  const [type, setType] = useState('BUY');
-  const [cryptoSymbol, setCryptoSymbol] = useState('XBT/USD');
-  const [amount, setAmount] = useState('');
+export default function BuySellForm({
+  accountPublicId,
+  onTransaction,
+  livePrices,
+}) {
+  const [type, setType] = useState("BUY");
+  const [cryptoSymbol, setCryptoSymbol] = useState("XBT/USD");
+  const [amount, setAmount] = useState("");
   const [price, setPrice] = useState(0);
 
-  // Actualiza el precio cada vez que cambie el símbolo o los datos en tiempo real
+  // Notificaciones
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
   useEffect(() => {
     if (livePrices && livePrices[cryptoSymbol]) {
       setPrice(livePrices[cryptoSymbol].last);
@@ -26,17 +38,32 @@ export default function BuySellForm({ accountPublicId, onTransaction, livePrices
   const handleSubmit = async () => {
     if (!amount || !price) return;
 
-    await createTransaction({
-      accountPublicId,
-      type,
-      cryptoSymbol,
-      amount,
-      priceAtTransaction: price,
-      profitOrLoss: 0
-    });
-
-    setAmount('');
-    onTransaction();
+    try {
+      await createTransaction({
+        accountPublicId,
+        type,
+        cryptoSymbol,
+        amount,
+        priceAtTransaction: price,
+        profitOrLoss: 0,
+      });
+      setAmount("");
+      setNotification({
+        open: true,
+        message: `Transaction successful: ${type} ${amount} ${cryptoSymbol}`,
+        severity: "success",
+      });
+      onTransaction();
+    } catch (error) {
+      // Intenta obtener el mensaje del backend
+      const backendMessage =
+        error?.response?.data?.message || "An error occurred";
+      setNotification({
+        open: true,
+        message: backendMessage,
+        severity: "error",
+      });
+    }
   };
 
   const total = amount && price ? parseFloat(amount) * price : 0;
@@ -50,7 +77,7 @@ export default function BuySellForm({ accountPublicId, onTransaction, livePrices
       <TextField
         select
         value={type}
-        onChange={e => setType(e.target.value)}
+        onChange={(e) => setType(e.target.value)}
         sx={{ mr: 2 }}
       >
         <MenuItem value="BUY">Buy</MenuItem>
@@ -60,11 +87,13 @@ export default function BuySellForm({ accountPublicId, onTransaction, livePrices
       <TextField
         select
         value={cryptoSymbol}
-        onChange={e => setCryptoSymbol(e.target.value)}
+        onChange={(e) => setCryptoSymbol(e.target.value)}
         sx={{ mr: 2 }}
       >
-        {PAIRS.map(p => (
-          <MenuItem key={p} value={p}>{p}</MenuItem>
+        {PAIRS.map((p) => (
+          <MenuItem key={p} value={p}>
+            {p}
+          </MenuItem>
         ))}
       </TextField>
 
@@ -72,7 +101,7 @@ export default function BuySellForm({ accountPublicId, onTransaction, livePrices
         label="Cantidad"
         type="number"
         value={amount}
-        onChange={e => setAmount(e.target.value)}
+        onChange={(e) => setAmount(e.target.value)}
         sx={{ mr: 2 }}
       />
 
@@ -96,6 +125,21 @@ export default function BuySellForm({ accountPublicId, onTransaction, livePrices
           Total: {amount && price ? `$${total.toFixed(2)}` : "-"}
         </Typography>
       </Box>
+
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={4000}
+        onClose={() => setNotification((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setNotification((prev) => ({ ...prev, open: false }))}
+          severity={notification.severity}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
