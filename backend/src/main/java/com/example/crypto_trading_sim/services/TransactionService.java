@@ -1,5 +1,6 @@
 package com.example.crypto_trading_sim.services;
 
+import com.example.crypto_trading_sim.exceptions.TransactionException;
 import com.example.crypto_trading_sim.models.Portfolio;
 import com.example.crypto_trading_sim.models.Transaction;
 import com.example.crypto_trading_sim.repositories.AccountRepository;
@@ -33,7 +34,7 @@ public class TransactionService {
         if ("BUY".equalsIgnoreCase(type)) {
             int updatedRows = accountRepository.subtractBalanceIfSufficient(accountPublicId, totalValue.doubleValue());
             if (updatedRows == 0) {
-                throw new IllegalArgumentException("Insufficient funds for this transaction");
+                throw new TransactionException("Insufficient funds for this transaction");
             }
 
             Optional<Portfolio> existingPortfolio = portfolioService
@@ -57,7 +58,7 @@ public class TransactionService {
                     .findFirst();
 
             if (existingPortfolio.isEmpty() || existingPortfolio.get().getAmount().compareTo(amount) < 0) {
-                throw new IllegalArgumentException("Insufficient crypto holdings for this transaction");
+                throw new TransactionException("Insufficient crypto holdings for this transaction");
             }
 
             BigDecimal newAmount = existingPortfolio.get().getAmount().subtract(amount);
@@ -70,7 +71,7 @@ public class TransactionService {
             accountRepository.addBalance(accountPublicId, totalValue.doubleValue());
 
         } else {
-            throw new IllegalArgumentException("Invalid transaction type: " + type);
+            throw new TransactionException("Invalid transaction type: " + type);
         }
 
         Transaction tx = new Transaction(
