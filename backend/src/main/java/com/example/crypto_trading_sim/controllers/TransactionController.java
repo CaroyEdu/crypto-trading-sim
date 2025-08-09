@@ -37,7 +37,7 @@ public class TransactionController {
                 cryptoSymbol,
                 amount,
                 priceAtTransaction,
-                profitOrLoss
+                null
         );
     }
 }

@@ -54,6 +54,8 @@ public class TransactionService {
                 portfolioService.addCryptoToPortfolio(accountPublicId, cryptoSymbol, amount);
             }
 
+            profitOrLoss = BigDecimal.ZERO;
+
         } else if ("SELL".equalsIgnoreCase(type)) {
             Optional<Portfolio> existingPortfolio = portfolioService
                     .getPortfolioByAccountPublicId(accountPublicId)
@@ -64,6 +66,23 @@ public class TransactionService {
             if (existingPortfolio.isEmpty() || existingPortfolio.get().getAmount().compareTo(amount) < 0) {
                 throw new TransactionException("Insufficient crypto holdings for this transaction");
             }
+
+            List<Transaction> pastBuys = transactionRepository.findByAccountPublicId(accountPublicId)
+                    .stream()
+                    .filter(t -> t.getCryptoSymbol().equalsIgnoreCase(cryptoSymbol) && "BUY".equalsIgnoreCase(t.getType()))
+                    .toList();
+
+            BigDecimal totalSpent = pastBuys.stream()
+                    .map(Transaction::getTotalValue)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalBought = pastBuys.stream()
+                    .map(Transaction::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal avgBuyPrice = totalBought.compareTo(BigDecimal.ZERO) > 0 ?
+                    totalSpent.divide(totalBought, 8, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+
+            profitOrLoss = priceAtTransaction.subtract(avgBuyPrice).multiply(amount);
 
             BigDecimal newAmount = existingPortfolio.get().getAmount().subtract(amount);
             if (newAmount.compareTo(BigDecimal.ZERO) > 0) {
@@ -93,4 +112,5 @@ public class TransactionService {
 
         transactionRepository.save(tx);
     }
+
 }

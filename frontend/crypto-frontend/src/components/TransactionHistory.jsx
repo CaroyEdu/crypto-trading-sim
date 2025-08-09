@@ -1,6 +1,14 @@
-import { useEffect, useState } from 'react';
-import { getTransactions } from '../services/api';
-import { Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper } from '@mui/material';
+import { useEffect, useState } from "react";
+import { getTransactions } from "../services/api";
+import {
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
 export default function TransactionHistory({ accountPublicId }) {
   const [transactions, setTransactions] = useState([]);
@@ -16,7 +24,9 @@ export default function TransactionHistory({ accountPublicId }) {
 
   return (
     <Paper sx={{ p: 2, mb: 4 }}>
-      <Typography variant="h6" gutterBottom>Transaction History</Typography>
+      <Typography variant="h6" gutterBottom>
+        Transaction History
+      </Typography>
       <Table>
         <TableHead>
           <TableRow>
@@ -29,7 +39,7 @@ export default function TransactionHistory({ accountPublicId }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map(tx => (
+          {transactions.map((tx) => (
             <TableRow key={tx.publicId}>
               <TableCell>{new Date(tx.created).toLocaleString()}</TableCell>
               <TableCell>{tx.type}</TableCell>
@@ -37,6 +47,12 @@ export default function TransactionHistory({ accountPublicId }) {
               <TableCell align="right">{tx.amount}</TableCell>
               <TableCell align="right">${tx.priceAtTransaction}</TableCell>
               <TableCell align="right">${tx.totalValue}</TableCell>
+              <TableCell
+                align="right"
+                style={{ color: tx.profitOrLoss > 0 ? "green" : "red" }}
+              >
+                {tx.profitOrLoss !== null ? `$${tx.profitOrLoss}` : "-"}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
