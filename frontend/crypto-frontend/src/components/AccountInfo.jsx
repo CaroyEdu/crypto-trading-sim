@@ -11,11 +11,7 @@ function AccountInfo({ account, onReset }) {
   };
 
   const handleResetClick = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to reset the balance of the account?"
-      )
-    ) {
+    if (window.confirm("Are you sure you want to reset the account?")) {
       onReset();
     }
   };
@@ -70,7 +66,7 @@ function AccountInfo({ account, onReset }) {
             fullWidth
             size="large"
           >
-            Reset Balance
+            Reset Account
           </Button>
         </Stack>
       </Box>
