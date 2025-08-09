@@ -59,24 +59,9 @@ public class TransactionRepository {
         jdbcTemplate.update(sql, params);
     }
 
-    public BigDecimal getNetHoldings(String accountPublicId, String cryptoSymbol) {
-        String sql = """
-        SELECT COALESCE(SUM(
-            CASE WHEN type = 'BUY' THEN amount
-                 WHEN type = 'SELL' THEN -amount
-                 ELSE 0 END
-        ), 0) AS holdings
-        FROM transaction
-        WHERE account_public_id = :accountPublicId
-          AND crypto_symbol = :cryptoSymbol
-    """;
-
-        Map<String, Object> params = Map.of(
-                "accountPublicId", accountPublicId,
-                "cryptoSymbol", cryptoSymbol
-        );
-
-        return jdbcTemplate.queryForObject(sql, params, BigDecimal.class);
+    public void deleteAllByAccountPublicId(String accountPublicId) {
+        String sql = "DELETE FROM transaction WHERE account_public_id = :accountPublicId";
+        jdbcTemplate.update(sql, Map.of("accountPublicId", accountPublicId));
     }
 
 }

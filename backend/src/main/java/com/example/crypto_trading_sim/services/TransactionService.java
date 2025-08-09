@@ -27,6 +27,10 @@ public class TransactionService {
         return transactionRepository.findByAccountPublicId(accountPublicId);
     }
 
+    public void clearPortfolioForAccount(String accountPublicId) {
+        transactionRepository.deleteAllByAccountPublicId(accountPublicId);
+    }
+
     @Transactional
     public void createTransaction(String accountPublicId, String type, String cryptoSymbol, BigDecimal amount, BigDecimal priceAtTransaction, BigDecimal profitOrLoss) {
         BigDecimal totalValue = priceAtTransaction.multiply(amount);

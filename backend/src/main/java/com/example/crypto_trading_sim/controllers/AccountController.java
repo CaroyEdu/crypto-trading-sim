@@ -25,8 +25,8 @@ public class AccountController {
     }
 
     @PostMapping("/{publicId}/reset")
-    public ResponseEntity<Void> resetAccountBalance(@PathVariable String publicId) {
-        boolean success = accountService.resetBalance(publicId);
+    public ResponseEntity<Void> resetAccount(@PathVariable String publicId) {
+        boolean success = accountService.resetAccount(publicId);
         if (!success) {
             return ResponseEntity.notFound().build();
         }

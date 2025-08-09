@@ -13,18 +13,17 @@ public class AccountService {
 
     private static final BigDecimal INITIAL_BALANCE = BigDecimal.valueOf(10000.00);
     private final AccountRepository accountRepository;
+    private final PortfolioService portfolioService;
+    private final TransactionService transactionService;
 
     public Account findByPublicId(String publicId) {
         return accountRepository.findByPublicId(publicId);
     }
 
-    public boolean resetBalance(String publicId) {
-        Account account = accountRepository.findByPublicId(publicId);
-        if (account == null) {
-            return false;
-        }
-        account.setBalance(INITIAL_BALANCE);
+    public boolean resetAccount(String publicId) {
         accountRepository.updateBalanceByPublicId(publicId, INITIAL_BALANCE);
+        portfolioService.clearPortfolioForAccount(publicId);
+        transactionService.clearPortfolioForAccount(publicId);
         return true;
     }
 
