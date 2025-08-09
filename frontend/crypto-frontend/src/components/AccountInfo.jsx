@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Box, Typography, Stack, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -6,7 +5,9 @@ function AccountInfo({ account, onReset }) {
   const navigate = useNavigate();
 
   const goToTransactionHistory = () => {
-    navigate("/transactions");
+    navigate("/transactions", {
+      state: { accountPublicId: account.publicId, accountName: account.name },
+    });
   };
 
   const handleResetClick = () => {
