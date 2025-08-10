@@ -93,10 +93,10 @@ Proxy or environment variables point API requests to backend
 ## Usage
 
 Access the app via browser at http://localhost:5173, to view live top 20 crypto prices updated in real-time, also to buy or sell cryptocurrencies using your virtual account balance. Moreover, you can use the reset button to restart with initial balance and empty holdings:
-![Screenshot 1](/screenshots/readme1.png)
+![Screenshot 1](./frontend/crypto-frontend/screenshots/readme1.png)
 
 Lastely, view transaction history with profit/loss details:
-![Screenshot 1](/screenshots/readme1.png)
+![Screenshot 1](./frontend/crypto-frontend/screenshots/readme2.png)
 
 ## Project Structure
 
