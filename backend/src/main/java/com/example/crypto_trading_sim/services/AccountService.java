@@ -26,14 +26,4 @@ public class AccountService {
         transactionService.clearPortfolioForAccount(publicId);
         return true;
     }
-
-    public boolean updateBalance(String publicId, BigDecimal newBalance) {
-        Account account = accountRepository.findByPublicId(publicId);
-        if (account == null) {
-            return false;
-        }
-        account.setBalance(newBalance);
-        accountRepository.updateBalanceByPublicId(publicId, newBalance);
-        return true;
-    }
 }

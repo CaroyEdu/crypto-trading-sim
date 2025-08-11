@@ -20,10 +20,6 @@ public class PortfolioService {
         return portfolioRepository.findByAccountPublicId(accountPublicId);
     }
 
-    public Portfolio getPortfolioByPublicId(String publicId) {
-        return portfolioRepository.findByPublicId(publicId);
-    }
-
     public void addCryptoToPortfolio(String accountPublicId, String cryptoSymbol, BigDecimal amount) {
         Portfolio portfolio = new Portfolio();
         portfolio.setPublicId(UUID.randomUUID().toString());
