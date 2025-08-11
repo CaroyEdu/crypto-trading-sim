@@ -50,7 +50,13 @@ A full-stack web application simulating cryptocurrency trading with real-time pr
 
 ### PostgreSQL Setup
 
-#### Option 1: Local installation (Linux example)
+#### Option 1: Run PostgreSQL via Docker (Easiest)
+
+```bash
+docker run --name postgres-crypto -e POSTGRES_DB=crypto_sim_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:17.5
+```
+
+#### Option 2: Local installation (Linux example)
 
 ```bash
 sudo apt update
@@ -58,12 +64,6 @@ sudo apt install -y postgresql postgresql-contrib
 sudo -u postgres psql -c "CREATE DATABASE crypto_sim_db;"
 sudo -u postgres psql -c "CREATE USER root WITH PASSWORD 'password';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE crypto_sim_db TO root;"
-```
-
-Option 2: Run PostgreSQL via Docker (Easiest)
-
-```bash
-docker run --name postgres-crypto -e POSTGRES_DB=crypto_sim_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:17.5
 ```
 
 ### Backend Setup
