@@ -30,6 +30,7 @@ A full-stack web application simulating cryptocurrency trading with real-time pr
 - **Code Utilities:** Lombok for cleaner code
 - **Data Access:** Direct SQL queries only (JPA or ORMs are _not_ used)
 - **API:** RESTful services for prices, transactions, and account management
+- **Integration Tests:** JUnit, Mockito with Testcontainers
 
 ## Frontend
 
@@ -46,24 +47,15 @@ A full-stack web application simulating cryptocurrency trading with real-time pr
 
 - Java 21 SDK (or above, compiled with language level 24)
 - Node.js and npm
-- PostgreSQL 17.5 (or use Docker container)
+- PostgreSQL 17.5
+- Docker (To run PostgreSQL and Testcontainer Integration Tests)
 
 ### PostgreSQL Setup
 
-#### Option 1: Run PostgreSQL via Docker (Easiest)
+#### Run PostgreSQL via Docker
 
 ```bash
 docker run --name postgres-crypto -e POSTGRES_DB=crypto_sim_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:17.5
-```
-
-#### Option 2: Local installation (Linux example)
-
-```bash
-sudo apt update
-sudo apt install -y postgresql postgresql-contrib
-sudo -u postgres psql -c "CREATE DATABASE crypto_sim_db;"
-sudo -u postgres psql -c "CREATE USER root WITH PASSWORD 'password';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE crypto_sim_db TO root;"
 ```
 
 ### Backend Setup
@@ -77,6 +69,19 @@ cd backend
 The backend runs by default at http://localhost:8080
 
 Database config is in src/main/resources/application.properties (update if needed)
+
+### Run Integration Tests
+
+Integration tests use Testcontainers with a real PostgreSQL container. Ensure you have Docker running locally before running the tests.
+
+To run integration tests:
+
+```bash
+cd backend
+./mvnw test
+```
+
+This will start the PostgreSQL container automatically for tests and run all unit and integration tests.
 
 ### Frontend Setup
 
