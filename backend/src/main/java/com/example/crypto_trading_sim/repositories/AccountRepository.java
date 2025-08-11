@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Repository
 @AllArgsConstructor
@@ -15,12 +16,6 @@ public class AccountRepository {
 
     public Account findByPublicId(String publicId) {
         String sql = "SELECT * FROM account WHERE public_id = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Account.class), publicId);
-    }
-
-    public Account findByPublicIdForUpdate(String publicId) {
-        // Locks the row until transaction ends to avoid concurrent updates
-        String sql = "SELECT * FROM account WHERE public_id = ? FOR UPDATE";
         return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Account.class), publicId);
     }
 
@@ -37,5 +32,20 @@ public class AccountRepository {
     public void updateBalanceByPublicId(String publicId, BigDecimal newBalance) {
         String sql = "UPDATE account SET balance = ? WHERE public_id = ?";
         jdbcTemplate.update(sql, newBalance, publicId);
+    }
+
+    public void deleteAll() {
+        String sql = "DELETE FROM account";
+        jdbcTemplate.update(sql);
+    }
+
+    public void save(Account account) {
+        String sql = "INSERT INTO account (public_id, name, balance, created) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                account.getPublicId(),
+                account.getName(),
+                account.getBalance(),
+                account.getCreated()
+        );
     }
 }

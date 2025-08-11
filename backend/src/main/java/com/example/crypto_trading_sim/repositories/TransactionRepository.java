@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,29 @@ public class TransactionRepository {
     public void deleteAllByAccountPublicId(String accountPublicId) {
         String sql = "DELETE FROM transaction WHERE account_public_id = :accountPublicId";
         jdbcTemplate.update(sql, Map.of("accountPublicId", accountPublicId));
+    }
+
+    public void deleteAll() {
+        String sql = "DELETE FROM \"transaction\"";
+        jdbcTemplate.update(sql, Map.of());
+    }
+
+    public List<Transaction> findAll() {
+        String sql = "SELECT * FROM transaction";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Transaction tx = new Transaction();
+            tx.setId(rs.getLong("id"));
+            tx.setPublicId(rs.getString("public_id"));
+            tx.setAccountPublicId(rs.getString("account_public_id"));
+            tx.setType(rs.getString("type"));
+            tx.setCryptoSymbol(rs.getString("crypto_symbol"));
+            tx.setAmount(rs.getBigDecimal("amount"));
+            tx.setPriceAtTransaction(rs.getBigDecimal("price_at_transaction"));
+            tx.setTotalValue(rs.getBigDecimal("total_value"));
+            tx.setProfitOrLoss(rs.getBigDecimal("profit_or_loss"));
+            tx.setCreated(Timestamp.valueOf(rs.getTimestamp("created").toLocalDateTime()));
+            return tx;
+        });
     }
 
 }
