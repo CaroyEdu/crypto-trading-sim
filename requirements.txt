@@ -1,0 +1,3 @@
+- Java 21 SDK (or above, compiled with language level 24)
+- Node.js and npm
+- PostgreSQL 17.5 (or use Docker container)
