@@ -58,30 +58,117 @@ A full-stack web application simulating cryptocurrency trading with real-time pr
 docker run --name postgres-crypto -e POSTGRES_DB=crypto_sim_db -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:17.5
 ```
 
-### Backend Setup
+## Backend Setup (Java 21 + Maven)
+
+### Prerequisites
+
+- **Java 21** installed  
+  Download from the official Oracle website:  
+  [https://www.oracle.com/java/technologies/downloads/#jdk21-windows](https://www.oracle.com/java/technologies/downloads/#jdk21-windows)
+
+- **Set the `JAVA_HOME` environment variable**:
+
+  1. Locate your Java installation folder, e.g.:
+     ```
+     C:\Program Files\Java\jdk-21
+     ```
+  2. Press **Win + S**, type **environment variables**, and click **Edit the system environment variables**.
+  3. Click **Environment Variables…**.
+  4. Under **System variables**, click **New…** (if it doesn’t exist) or **Edit** (if it exists):
+     - **Variable name:** `JAVA_HOME`
+     - **Variable value:** Java installation path (e.g., `C:\Program Files\Java\jdk-21`)
+  5. Edit the `Path` variable (under **System variables**) → **New** → add:
+     ```
+     %JAVA_HOME%\bin
+     ```
+  6. Click **OK** on all windows.
+
+  **Verify installation:**
+
+  ```cmd
+  java -version
+  javac -version
+  echo %JAVA_HOME%
+  ```
+
+- Docker running locally (required for integration tests).
+
+#### 1. Navigate to the backend folder
 
 ```bash
 cd backend
+```
+
+#### 2. Build the project
+
+Using Maven Wrapper (no need to install Maven globally):
+
+**Windows:**
+
+```cmd
+mvnw.cmd clean install
+```
+
+**macOS/Linux:**
+
+```bash
 ./mvnw clean install
+```
+
+#### 3. Run the backend
+
+Windows:
+
+```cmd
+mvnw.cmd spring-boot:run
+```
+
+macOS/Linux:
+
+```bash
 ./mvnw spring-boot:run
 ```
 
-The backend runs by default at http://localhost:8080
+The backend will start at:
+http://localhost:8080
 
-Database config is in src/main/resources/application.properties (update if needed)
+#### 4. Configure the Database (if needed)
 
-### Run Integration Tests
+Database settings are located in:
 
-Integration tests use Testcontainers with a real PostgreSQL container. Ensure you have Docker running locally before running the tests.
+```css
+src/main/resources/application.properties
+```
 
-To run integration tests:
+Update these values to match your local or production database configuration.
+
+### Running Integration Tests
+
+Integration tests use Testcontainers with a real PostgreSQL instance.
+
+**Important**: Make sure Docker is running before executing the tests.
+
+#### Navigate to the backend folder:
 
 ```bash
 cd backend
+```
+
+### Run the tests:
+
+**Windows:**
+
+```cmd
+mvnw.cmd test
+```
+
+**macOS/Linux:**
+
+```bash
 ./mvnw test
 ```
 
-This will start the PostgreSQL container automatically for tests and run all unit and integration tests.
+Maven will automatically start the PostgreSQL container for the tests and execute all unit and integration tests.
 
 ### Frontend Setup
 
