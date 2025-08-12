@@ -34,7 +34,7 @@ A full-stack web application simulating cryptocurrency trading with real-time pr
 
 ## Frontend
 
-- **Technology:** React 18 + Vite
+- **Technology:** React 19 + Vite
 - **UI Library:** Material UI for components
 - **HTTP Client:** Axios
 - **Routing:** react-router-dom

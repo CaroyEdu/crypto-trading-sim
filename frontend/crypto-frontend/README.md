@@ -39,7 +39,7 @@ This frontend displays the top 20 cryptocurrencies with live price updates fetch
 
 ## Tech Stack
 
-- **Framework:** React 18 (via Vite for fast build and development)
+- **Framework:** React 19 (via Vite for fast build and development)
 - **UI Library:** Material UI (MUI) for consistent components and styling
 - **HTTP Client:** Axios for API communication with backend
 - **Routing:** react-router-dom for client-side navigation
