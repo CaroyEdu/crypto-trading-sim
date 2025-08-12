@@ -67,7 +67,7 @@ crypto-frontend/
 │ │ └── AccountTransactions.jsx # Page to view full transaction history
 │ ├── services/
 │ │ └── api.js # Axios-based API calls to backend
-│ ├── utils/ # Utility functions (if any)
+│ ├── utils/
 │ ├── App.jsx # App root component with routing
 │ ├── index.css # Global styles
 │ └── main.jsx # Entry point of React app
