@@ -45,7 +45,7 @@ A full-stack web application simulating cryptocurrency trading with real-time pr
 
 ### Prerequisites
 
-- Java 21 SDK (or above, compiled with language level 24)
+- Java 21 SDK
 - Node.js and npm
 - PostgreSQL 17.5
 - Docker (To run PostgreSQL and Testcontainer Integration Tests)
