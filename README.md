@@ -170,11 +170,35 @@ mvnw.cmd test
 
 Maven will automatically start the PostgreSQL container for the tests and execute all unit and integration tests.
 
-### Frontend Setup
+## Frontend Setup
+
+### 1. Install Node.js & npm
+
+Download and install **Node.js** (which includes npm) from the official website:  
+[https://nodejs.org/en/download/](https://nodejs.org/en/download/)
+
+> **Recommended:** Use the **LTS version** for better stability.  
+> After installation, verify the versions:
+>
+> ```bash
+> node -v
+> npm -v
+> ```
+
+---
+
+### 2. Install dependencies and run the application
+
+From the project root, navigate to the `frontend` folder and install dependencies:
 
 ```bash
-cd frontend
+cd frontend/crypto-frontend
 npm install
+```
+
+Start the develpment server:
+
+```bash
 npm run dev
 ```
 
