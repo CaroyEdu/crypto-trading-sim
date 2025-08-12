@@ -189,7 +189,7 @@ Download and install **Node.js** (which includes npm) from the official website:
 
 ### 2. Install dependencies and run the application
 
-From the project root, navigate to the `frontend` folder and install dependencies:
+From the project root, navigate to the `frontend/crypto-frontend` folder and install dependencies:
 
 ```bash
 cd frontend/crypto-frontend
