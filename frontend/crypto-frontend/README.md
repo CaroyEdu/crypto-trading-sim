@@ -116,7 +116,7 @@ API calls are centralized in `src/services/api.js` using Axios. The backend URL 
 ### Install dependencies and run development server
 
 ```bash
-cd crypto-frontend
+cd frontend/crypto-frontend
 npm install
 npm run dev
 ```
